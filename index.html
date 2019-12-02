@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>App</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <style>
+
+        body {
+            overflow: hidden;
+            font-family: Sans-Serif;
+        }
+        .card {
+        background-color: white;
+        /*box-shadow: 0px 1px 5px black;*/
+        border: 1px solid #d9d9d9;
+        color: black;
+        font-size: 20px;
+        border-radius: 4px;
+        padding: 20px;
+        margin: 30px 20px;
+        touch-action: none;
+        text-align: left;
+        position: absolute;
+        left: 5%;
+        top: 16px;
+
+        /* This makes things *much* easier */
+        box-sizing: border-box;
+        transition: background-color 0.2s ease;
+        }
+
+
+		.inner-card-content::-webkit-scrollbar-track, textarea::-webkit-scrollbar-track, #menu-panel::-webkit-scrollbar-track
+		{
+			
+			border-radius: 10px;
+			background-color: #F5F5F5;
+		}
+	
+		.inner-card-content::-webkit-scrollbar, textarea::-webkit-scrollbar, #menu-panel::-webkit-scrollbar
+		{
+			border-radius: 10px;
+			width: 8px;
+			height: 8px;
+			background-color: #F5F5F5;
+		}
+	
+		.inner-card-content::-webkit-scrollbar-thumb, textarea::-webkit-scrollbar-thumb, #menu-panel::-webkit-scrollbar-thumb
+		{
+			border-radius: 10px;
+			background-color: #e2e2e2;
+		}
+        
+        .resize-drag, .drag {
+            background-color: #f7f7f7;
+        }
+
+        #card-area {
+            position: fixed;
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transition: left 0.4s ease;
+        }
+
+        #dark-overlay {
+            position: fixed;
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: black;
+            opacity: 0.75;
+            transition: left 0.4s ease;
+        }
+
+        .noselect {
+        -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+                -ms-user-select: none;
+                    user-select: none;
+        }
+
+        #menu-icon {
+            font-size: 32px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 10px;
+            padding-left: 16px;
+            cursor: pointer;
+            color: #232323;
+            transition: color 0.4s ease-in-out, left 0.15s ease;
+        }
+
+        #menu-panel {
+            background-color: #232323;
+            position: fixed;
+            width: 25%;
+            min-width: 300px;
+            max-width: 500px;
+            height: 100%;
+            top: 0;
+            left: -25%;
+            transition: left 0.4s ease;
+            box-shadow: inset -12px 0 8px -6px black;
+            overflow-y: auto;
+        }
+
+        #menu-panel > div {
+            color: white;
+            margin-top: 10%;
+            font-size: 32px;
+            text-align: center;
+            cursor: pointer;
+            padding: 30px;
+            background-color: #111111;
+            transition: background-color 0.3s ease;
+            box-shadow: inset -12px 0 8px -6px black;
+        }
+
+        #menu-panel div:first-of-type {
+            margin-top: 30%;
+        }
+
+        #menu-panel div:hover {
+            background-color: black;
+        }
+
+        #menu-panel h1 {
+            text-align: right;
+            color: white;
+            margin-right: 20px;
+            margin-top: 16px;
+        }
+
+        #instruction {
+            text-align: center;
+            color: #efefef;
+            font-size: 50px;
+            -webkit-text-stroke: 1px #e5e5e5;
+        }
+        /*
+        #new-script-panel {
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+            background-color: gray;
+        }*/
+        #new-script-text {
+            width: 98%;
+            display: block;
+            margin-top: 10px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 85%;
+            resize: none;
+        }
+
+        #btn-submit-script {
+            margin-top: 8px;
+            cursor: pointer;
+        }
+        .card-id-marker {
+            margin-top: -18px;
+            margin-left: -16px;
+            font-size: 12px;
+            text-align: left;
+            color: #c9c9c9;
+        }
+
+        .card-close-button {
+            text-align: right;
+            font-size: 14px;
+            color: #c9c9c9;
+            margin-right: -16px;
+            margin-top: -23px;
+            cursor: pointer;
+            position: absolute;
+            right: 20px;
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+
+        .card-save-button {
+            text-align: right;
+            font-size: 13px;
+            color: #c9c9c9;
+            margin-right: 8px;
+            margin-top: -22px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            position: absolute;
+            right: 20px;
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+
+        #app-page {
+            background-color: #333333;
+            position: fixed;
+            top: 100%;
+            bottom: 0;
+            width: 100%;
+            transition: top 0.5s ease;
+            color: white;
+        }
+
+        #app-page-close-button {
+            position: absolute;
+            right: 20px;
+            font-size: 32px;
+            cursor: pointer;
+        }
+
+        #app-page h1 {
+            text-align: center;
+        }
+
+        #app-display-area {
+            position: absolute;
+            left: 8%;
+            right: 8%;
+            margin-top: 30px;
+            height: 85%;
+            border-radius: 10px;
+            background-color: #262626;
+            padding-top: 20px;
+            overflow-y: scroll;
+        }
+
+        #saved-cards-page {
+            background-color: #333333;
+            position: fixed;
+            top: 100%;
+            bottom: 0;
+            width: 100%;
+            transition: top 0.5s ease;
+            color: white;
+        }
+
+        #saved-cards-page-close-button {
+            position: absolute;
+            right: 20px;
+            font-size: 32px;
+            cursor: pointer;
+        }
+
+        #saved-cards-page h1 {
+            text-align: center;
+        }
+
+        #saved-cards-display-area {
+            position: absolute;
+            left: 8%;
+            right: 8%;
+            margin-top: 30px;
+            height: 85%;
+            border-radius: 10px;
+            background-color: #262626;
+            padding-top: 20px;
+            overflow-y: scroll;
+        }
+
+        .app-card {
+            background-color: #383737;
+            text-align: center;
+            width: 48%;
+            height: 120px;
+            line-height: 120px;
+            display: inline-block;
+            margin-top: 36px;
+            border-radius: 10px;
+            font-size: 28px;
+            cursor: pointer;
+            transition: background-color 0.4s ease;
+        }
+
+        .app-card:hover {
+            background-color: #191919;
+        }
+
+
+        .app-display-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            background-color: #2b2b2b;
+            border-radius: 10px;
+        } 
+
+        .app-display-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #515151;
+            border-radius: 10px;
+        }
+
+        .app-display-scrollbar::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+            background-color: #2b2b2b;
+            border-radius: 10px;
+        }
+
+        #prompt-page {
+            position: fixed;
+            background-color: #333333;
+            width: 100%;
+            height: 100%;
+            top: -100%;
+            transition: top 0.5s ease;
+            color: white;
+            text-align: center;
+        }
+
+        #prompt-panel {
+            background-color: #262626;
+            position: absolute;
+            border-radius: 10px;
+            left: 25%;
+            right: 25%;
+            height: 85%;
+            margin-top: 40px;
+        }
+
+        #prompt-panel input {
+            margin-top: 18px;
+            margin-left: 20%;
+            width: 60%;
+        }
+
+        #prompt-panel button {
+            position: absolute;
+            right: 18px;
+            bottom: 18px;
+        }
+
+        #settings-page {
+            background-color: #333333;
+            position: fixed;
+            left: 100%;
+            width: 100%;
+            height: 100%;
+            transition: left 0.5s ease;
+            color: white;
+        }
+
+        #settings-page-panel {
+            background-color: #262626;
+            position: absolute;
+            border-radius: 10px;
+            left: 25%;
+            right: 25%;
+            height: 85%;
+            margin-top: 40px;
+        }
+
+        #drawing-area {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            transition: left 0.4s ease;
+        }
+
+        .draw-button {
+            position: fixed;
+            text-align: center;
+            right: 20px;
+            bottom: 20px;
+            font-size: 28px;
+            padding-top: 6px;
+            width: 50px;
+            height: 50px;
+            background-color: black;
+            color: white;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, right 0.25s ease;
+        }
+        
+        #drawing-clear-button {
+            transition: bottom 0.3s ease;
+        }
+
+        #drawing-width-button {
+            transition: bottom 0.3s ease, width 0.25s ease-in-out;
+        }
+
+        #drawing-to-line-button {
+            transition: bottom 0.3s ease, right 0.3s ease;
+        }
+
+        #drawing-auto-line-button {
+            transition: bottom 0.3s ease, right 0.3s ease;
+        }
+
+        #drawing-lines-button {
+            padding-top: 0px;
+            transition: bottom 0.3s ease;
+        }
+
+        #drawing-undo-button {
+            transition: bottom 0.3s ease;
+        }
+
+        #drawing-button-container {
+            position: fixed;
+            right: 20px;
+            bottom: 40px;
+            width: 50px;
+            height: 50px;
+        }
+
+        #draw-width-slider {
+            position: absolute;
+            width: 60%;
+            margin-top: 11px;
+            margin-left: 20px;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            border-radius: 3px;   
+            background: white;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 20px;
+            border-radius: 3px;
+            background: #999999;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 3px;
+            background: #999999;
+            cursor: pointer;
+        }
+
+        .setting-list-title {
+            display: inline-block;
+            width: 49%;
+            padding-left: 16%;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        .setting-list-value {
+            display: inline-block;
+            width: 49%;
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        input[type=checkbox]
+                            {
+                                /* Double-sized Checkboxes */
+                                -ms-transform: scale(1.5); /* IE */
+                                -moz-transform: scale(1.5); /* FF */
+                                -webkit-transform: scale(1.5); /* Safari and Chrome */
+                                -o-transform: scale(1.5); /* Opera */
+                                padding: 10px;
+                            }
+
+        #share-button {
+            position: absolute;
+            right: 16px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: gray;
+        }
+
+    </style>
+</head>
+<body>
+
+        <canvas id='drawing-area'>
+            <!--Code that removes drawing area if browser is not supported-->
+        </canvas>
+
+        <div id='dark-overlay'>
+            
+        </div>
+
+        <div id='card-area' class="resize-container">
+            <h1 id='instruction' class='noselect'><strong>Open the menu and select App.</strong></h1>
+        </div>
+
+        <div id='share-button' onclick="saveLink()">
+            <i class="far fa-share-square"></i>
+        </div>
+
+        
+        <div id='drawing-button-container'>
+
+            <div id='drawing-clear-button' class='draw-button noselect' onclick="drawingButtonClear()">
+                <i class='fas fa-trash'></i>
+            </div>
+
+            <div id='drawing-to-line-button' data-toggle="tooltip" title="Straight Line Fix" class='draw-button noselect' onclick="toggleToLine()">
+                <strong>/</strong>
+            </div>
+
+            <div id='drawing-auto-line-button' data-toggle="tooltip" title="Auto Line Fix" class='draw-button noselect' onclick="toggleAutoLine()">
+                <i class='fas fa-draw-polygon'></i>
+            </div>
+
+            <div id='drawing-lines-button' class='draw-button noselect'>
+                <span style='font-size: 14px; top: 14px; left: 7px; position: absolute;'><strong>Lines</strong></span>
+            </div>
+
+            <div id='drawing-width-button' class='draw-button noselect'>
+                <i class='fas fa-pencil-ruler'></i>
+            </div>
+
+            <div id='drawing-undo-button' class='draw-button noselect' onclick="undoDrawing()">
+                    <i class='fas fa-undo-alt'></i>
+            </div>
+
+            <div id='drawing-toggle-button' class='draw-button noselect' onclick="drawingButtonToggle()">
+                <i class='fas fa-pencil-alt'></i>
+            </div>
+        </div>
+
+        
+
+        <div id='menu-panel' class='noselect'>
+            <h1>Menu</h1>
+            <!--<div onclick="createNewCard()">Add Card</div> Testing-->
+            <div onclick="openAppPage()"> App <div style='text-align: right; margin-top: -45px;'><i class="fas fa-columns"></i></div></div>
+            <div onclick="openSavedCardsPage()"> Saved <div style='text-align: right; margin-top: -45px;'><i class="fas fa-archive"></i></div></div>
+            <div onclick="openSettingsPage()"> Settings <div style='text-align: right; margin-top: -45px;'><i class="fas fa-cog"></i></div></div>
+        </div>
+        <div id='menu-icon' class='noselect'>
+            <strong>&#9776;</strong>
+        </div>
+
+        <div id='saved-cards-page'>
+                <div id='saved-cards-page-close-button' onclick='closeSavedCardsPage()'>x</div>
+    
+                <h1>Saved Cards</h1>
+    
+                <div id='saved-cards-display-area' class='app-display-scrollbar'>
+                    <div class='container'>
+                        
+                </div>
+            </div>
+        </div>
+
+
+        <div id='app-page'>
+            <div id='app-page-close-button' onclick='closeAppPage()'>x</div>
+
+            <h1>Apps</h1>
+
+            <div id='app-display-area' class='app-display-scrollbar'>
+                <div class='container'>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div id='prompt-page'>
+            <div id='prompt-panel'>
+            
+            </div>
+        </div>
+
+        <div id='settings-page'>
+            <div id='app-page-close-button' onclick='closeSettingsPage()'>x</div>
+            <h1 style='text-align: center; margin-top: 40px; margin-bottom: -10px;'><strong>Settings</strong></h1>
+            <div id='settings-page-panel'>
+                
+            </div>
+        </div>
+
+        
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs@next/dist/interact.min.js"></script>
+    <script src="js/apps.js"></script>
+
+    <script>
+
+        var windowPrompt = window.prompt;
+
+        function sizingCheck() {
+
+            if($(window).innerWidth() < 950) {
+                $("#instruction").css("font-size", "32px");
+            } else {
+                $("#instruction").css("font-size", "50px");
+            }
+
+            /*
+            if($(window).innerWidth() < 1000) {
+                $("#menu-panel > div > div").hide();
+            } else {
+                $("#menu-panel > div > div").show();
+            }
+            */
+
+            $("#instruction").css("margin-top", ($(window).innerHeight() / 2) - 25);
+        }
+    
+
+        $(document).ready(function() {
+            sizingCheck();
+        })
+
+        $(window).resize(function() {
+            sizingCheck();
+        });
+
+
+    var menu = {
+        open: false
+    };
+
+    var script = {
+        panel: {
+            open: false
+        },
+
+        memory: {
+            lastScript: ""
+        },
+
+        styles: {
+            defaultStyle: `
+                <style>
+                    
+                    .card-html {
+                        margin: 0;
+                        padding: 0;
+                        height: 100%;
+                        text-align: center;
+                    }
+
+                    .card-html iframe {
+                        width: 90%;
+                        height: 90%;
+                        margin-top: 16px;
+                    }
+
+                    .card-html div {
+                        width: 100%;
+                        height: 100%;
+                    }
+
+                    .card-html textarea {
+                        resize: none;
+                        width: 100%;
+                        height: 100%
+                    }
+
+                </style>
+            `
+        },
+
+        help: {
+            guideHTML: `
+
+            <p style="text-align: left">
+                    Create Card <br />
+            { <br />
+                Create a card and add HTML. <br />
+            } <br />
+            <br />
+            Delete Card [ID] <br />
+            <br />
+            Settings <br />
+            { <br />
+                SettingValue: SettingProperty <br />
+            } <br />
+            </p>
+            `
+        }
+    };
+
+    var cards = {
+        count: 0,
+        zIndexCounter: 1,
+        memory: []
+    };
+
+    function Setting(_title, _name, _value, _showInSettingsMenu) {
+        this.title = _title;
+        this.name = _name;
+        this.value = _value;
+        this.showInSettingsMenu = _showInSettingsMenu;
+    }
+
+    function getSetting(settingName) {
+        for(x = 0; x < settings.length; x++) {
+            if(settings[x].name == settingName) {
+                return settings[x].value;
+            }
+        }
+        return "No Setting Found";
+    }
+
+    function setSetting(settingName, _value) {
+        for(x = 0; x < settings.length; x++) {
+            if(settings[x].name == settingName) {
+                settings[x].value = _value;
+                return "Setting Updated";
+            }
+            
+        }
+        return "No Setting Found";
+    }
+
+    var settings = [
+        (new Setting("Dark Mode", "dark-mode", (false), true)),
+        (new Setting("Menu Icon Color", "menu-icon-color", ("#232323"), false)),
+        (new Setting("Pen Color", "pen-color", ("black"), false)),
+        (new Setting("Confirm On Card Close", "show-close-confirm", (true), true)),
+        (new Setting("Confirm On Card Save", "show-save-confirm", (true), true)),
+        (new Setting("Drawing", "drawing", (false), false)),
+        (new Setting("Pen Size", "pen-size", (3), false)),
+        (new Setting("Auto Line", "auto-line", (false), false)),
+        (new Setting("Auto Line Intensity", "auto-line-intensity", (5), true)),
+        (new Setting("To Line", "to-line", (false), false)),
+        (new Setting("Show Instructions", "instructions", (true), true)),
+        (new Setting("Allow Drawing", "allow-drawing", (true), true))
+    ];
+
+    var savedCards = [];
+
+    var prompt = {
+        input: [],
+        open: false
+    };
+
+
+    var draw = {
+        record: [],
+        lineRecord: []
+    };
+
+    /*
+    $(".card").on("click", function(e) {
+        if(e.detail === 3) {
+            $(this).toggleClass("resize-drag");
+            $(this).toggleClass("noselect");
+        }
+    });*/
+
+    cookieSettings();
+
+    interact('.drag')
+    .draggable({
+        onmove: window.dragMoveListener,
+        modifiers: [
+        interact.modifiers.restrict({
+            restriction: 'parent',
+            elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+        })
+        ]
+    });
+    
+    interact('.resize-drag')
+    .draggable({
+        onmove: window.dragMoveListener,
+        modifiers: [
+        interact.modifiers.restrict({
+            restriction: 'parent',
+            elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+        })
+        ]
+    })
+    .resizable({
+        // resize from all edges and corners
+        edges: { left: true, right: true, bottom: true, top: true },
+
+        modifiers: [
+        // keep the edges inside the parent
+        interact.modifiers.restrictEdges({
+            outer: 'parent',
+            endOnly: true,
+        }),
+
+        // minimum size
+        interact.modifiers.restrictSize({
+            min: { width: 100, height: 50 },
+        }),
+        ],
+
+        inertia: true
+    })
+    .on('resizemove', function (event) {
+        var target = event.target,
+            x = (parseFloat(target.getAttribute('data-x')) || 0),
+            y = (parseFloat(target.getAttribute('data-y')) || 0);
+
+        // update the element's style
+        target.style.width  = event.rect.width + 'px';
+        target.style.height = event.rect.height + 'px';
+
+        // translate when resizing from top or left edges
+        x += event.deltaRect.left;
+        y += event.deltaRect.top;
+
+        target.style.webkitTransform = target.style.transform =
+            'translate(' + x + 'px,' + y + 'px)';
+
+        target.setAttribute('data-x', x);
+        target.setAttribute('data-y', y);
+        //target.textContent = Math.round(event.rect.width) + '\u00D7' + Math.round(event.rect.height);
+    });
+
+    function dragMoveListener (event) {
+    var target = event.target,
+        // keep the dragged position in the data-x/data-y attributes
+        x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+        y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+    // translate the element
+    target.style.webkitTransform =
+    target.style.transform =
+      'translate(' + x + 'px, ' + y + 'px)';
+
+    // update the posiion attributes
+    target.setAttribute('data-x', x);
+    target.setAttribute('data-y', y);
+  }
+
+  // this is used later in the resizing and gesture demos
+  window.dragMoveListener = dragMoveListener;
+
+    $("#menu-icon").on("click", function() {
+        if(!menu.open) {
+            openMenu();
+        } else {
+            closeMenu();
+        }
+    });
+
+    $("#card-area").on("click", function() {
+        closeMenu();
+    });
+
+    function createNewCard(innerHTML, cardWidth, cardHeight, cardX, cardY) {
+        if(innerHTML === undefined || innerHTML === null) {
+            innerHTML = "";
+        }
+
+        if(cardWidth === undefined || cardWidth === null) {
+            cardWidth = "240px";
+        } 
+
+        if(cardHeight === undefined || cardHeight === null) {
+            cardHeight = "180px";
+        }
+
+        if($(".card").length === 0) {
+            $("#instruction").html("<strong>Right-click on the card to move and resize it.</strong>");
+        }
+        cards.zIndexCounter++;
+        cards.count++;
+        $("#card-area").append($(`
+            <div id='` + cards.count + `'class='card' style='z-index: ` + cards.zIndexCounter + `; width: ` + cardWidth +`; height: ` + cardHeight +`; left: ` + cardX + `; top: ` + cardY + `;'>
+                <h4 class='card-id-marker noselect'>
+                    ID: ` + cards.count + `
+                </h4>
+                
+                <div class='card-close-button noselect' onclick='deleteCard(` + cards.count +`, ` + getSetting("show-close-confirm") + `)'><i class="fas fa-window-close"></i></div>
+                <div class='card-save-button noselect' onclick='saveCard(` + cards.count + `, ` + getSetting("show-save-confirm") + `)'><i class="fas fa-sd-card"></i></div>
+                <div class='inner-card-content' style='height: 95%;
+                overflow-y: auto;' id='inner-card-` + cards.count + `'>
+                ` + innerHTML +`
+                </div>
+            </div>
+            `).contextmenu(function() {
+            $("#instruction").empty();
+            $(this).toggleClass("resize-drag");
+            $(this).toggleClass("noselect");
+            return false; // Prevents contextmenu from displaying.
+        }).dblclick(function() {
+            cards.zIndexCounter++;
+            $(this).css("z-index", cards.zIndexCounter);
+        }));
+        return cards.count;
+    }
+
+    function saveCard(id, askForConfirm) {
+        if(askForConfirm) {
+            if(confirm("Save and remove card?")) {
+                savedCards.push(new App(windowPrompt("Saved card name"), `
+                Create Card
+                {
+                    ` + $("#" + id + " .inner-card-content").html() + `
+                }
+                `));
+                $("#" + id).remove();
+            }
+        } else {
+            $("#" + id).remove();
+        }
+    }
+
+    function deleteCard(id, askForConfirm) {
+
+        if(askForConfirm) {
+            if(confirm("Delete card?")) {
+                $("#" + id).remove();
+            }
+        } else {
+            $("#" + id).remove();
+        }
+    }
+
+    function createNewScript() {
+        openScriptCard();
+    }
+
+    $("#menu-panel div").on("click", function() {
+        closeMenu();
+    })
+
+    function openMenu() {
+        menu.open = true;
+        $("#menu-panel").css("left", "0");
+        $("#menu-icon").css("color", "white");
+        $("#card-area").css("left", "25%");
+        $("#drawing-area").css("left", "25%");
+        $(".draw-button").css("right", "-25%");
+        $("#drawing-button-container").hide();
+    }
+
+    function closeMenu() {
+        menu.open = false;
+        $("#menu-panel").css("left", "-25%");
+        $("#menu-icon").css("color", getSetting("menu-icon-color"));
+        $("#card-area").css("left", "0");
+        $("#drawing-area").css("left", "0");
+        $(".draw-button").css("right", "20px");
+        $("#drawing-button-container").show();
+    }
+
+    function turnOnDrawing() {
+        setSetting("drawing", true);
+        $("#menu-icon").css({"width": "15%", "height": "10%", "top": "0", "left": "0", "padding": "10px"});
+        $("#drawing-button-container").css("z-index", cards.zIndexCounter);
+        $("#drawing-toggle-button").css({"background-color": "#636363", "box-shadow": "0 0 3pt 2pt white"});
+        $("#drawing-area").css("z-index", cards.zIndexCounter);
+    }
+
+    function turnOffDrawing() {
+        setSetting("drawing", false);
+        $("#menu-icon").css({"width": "32px", "height": "47px"});
+        $("#drawing-toggle-button").css({"background-color": "black", "box-shadow": "none"});
+        $("#drawing-area").css("z-index", "-100");
+        $("#dark-overlay").css("z-index", "-101");
+    }
+
+    function drawingButtonToggle() {
+        if(getSetting("drawing")) {
+            turnOffDrawing();
+        } else {
+            turnOnDrawing();
+        }
+    }
+
+    function drawingButtonClear() {
+        draw.record.length = 0; // Clear record array
+        clearScreen();
+    }
+
+    function undoDrawing() {
+        for(x = draw.lineRecord[draw.lineRecord.length - 1]; x > draw.lineRecord[draw.lineRecord.length - 2]; x--) {
+            draw.record.pop();
+        }
+        performDrawRecord();
+    }
+
+    function clearScreen() {
+        pen.fillStyle = "white";
+        pen.clearRect(0, 0, pen.canvas.width, pen.canvas.height);
+        pen.fillStyle = "black";
+    }
+
+    var drawButtonHover = false;
+    $("#drawing-button-container").mouseenter(function() {
+        drawButtonHover = true;
+        $("#drawing-button-container").css("height", "240px");
+        $("#drawing-clear-button").css("bottom", "260px");
+        $("#drawing-width-button").css("bottom", "200px");
+        $("#drawing-auto-line-button").css("bottom", "140px");
+        $("#drawing-to-line-button").css("bottom", "140px");
+        $("#drawing-lines-button").css("bottom", "140px");
+        $("#drawing-undo-button").css("bottom", "80px"); 
+    });
+
+    $("#drawing-button-container").mouseleave(function() {
+        drawButtonHover = false;
+        setTimeout(function() {
+            if(!drawButtonHover) {
+                $("#drawing-button-container").css("height", "50px");
+                $("#drawing-clear-button").css("bottom", "20px");
+                $("#drawing-width-button").css("bottom", "20px");
+                $("#drawing-undo-button").css("bottom", "20px"); 
+                $("#drawing-auto-line-button").css({"bottom": "20px", "right": "20px"});
+                $("#drawing-to-line-button").css({"bottom": "20px", "right": "20px"});
+                $("#drawing-lines-button").css("bottom", "20px");
+                $("#drawing-width-button").css({"width": "50px"});
+
+                setTimeout(function() {
+                    $("#drawing-width-button").css("text-align: center");
+                    
+                    $("#drawing-width-button").html("<i class='fas fa-pencil-ruler'>"); 
+                }, 250);
+            }
+        }, 1000);
+    });
+
+    $("#drawing-lines-button").click(function() {
+        $("#drawing-auto-line-button").css("right", "80px");
+        $("#drawing-to-line-button").css("right", "140px");
+    });
+
+    $("#drawing-width-button").click(function() {
+        $("#drawing-width-button").css({"width": "200px", "text-align": "right", "padding-right": "11px"});
+        if($("#drawing-width-button").html().trim().substring(0, 28) !== "<div class=\"slidecontainer\">") {
+           setTimeout(function() {
+            $("#drawing-width-button").html(`
+                <div class="slidecontainer">
+                    <input type="range" min="1" max="5" value="` + getSetting("pen-size") + `" class="slider" step="0.1" id="draw-width-slider">
+                </div>
+                <i class='fas fa-pencil-ruler'>
+            `); 
+            $("#draw-width-slider").on("input", function() {
+                setSetting("pen-size", $(this).val());
+            });
+           }, 150);
+        }
+        
+    });
+
+    $("#drawing-width-button").mouseleave(function() {
+
+    });
+
+    function toggleAutoLine() {
+        if(!getSetting("auto-line")) {
+            $("#drawing-auto-line-button").css("background-color", "#636363");
+        } else {
+            $("#drawing-auto-line-button").css("background-color", "black");
+        }
+        setSetting("auto-line", !getSetting("auto-line"));
+    }
+
+    function toggleToLine() {
+        if(!getSetting("to-line")) {
+            $("#drawing-to-line-button").css("background-color", "#636363");
+        } else {
+            $("#drawing-to-line-button").css("background-color", "black");
+        }
+        setSetting("to-line", !getSetting("to-line"));
+    }
+
+    function runApp(script) {
+        runScript(script);
+        closeAppPage();
+        closeSavedCardsPage();
+    }
+
+
+
+    function openScriptCard() {
+        //<h3 style='margin-left: 5%;'>Please refer to [link] for script documentation.</h3>
+        
+
+        createNewCard(`
+                <textarea id='new-script-text' class='form-control'></textarea>
+                <button id='btn-submit-script' class='btn btn-default' onclick='runScript($(\"#new-script-text\").val());'>Run</button>
+        `, "700px", "500px");
+
+
+        /*
+        $("body").append(`
+            <div id='new-script-panel'>
+                <textarea id='new-script-text' class='form-control'></textarea>
+                <button id='btn-submit-script' class='btn btn-default' onclick='runScript($(\"#new-script-text\").val());'>Run</button>
+            </div>`);
+        */
+    }
+
+    function loadApps() {
+        $("#app-display-area .container").empty();
+        for(x = 0; x < apps.length; x+=2) {
+            if(apps.length % 2 === 1 && x === apps.length - 1) {
+                $("#app-display-area .container").append(`<div class="row">
+                        <div class="col-sm app-card noselect" onclick='runApp(\`` + apps[apps.length - 1].script + `\`)'>
+                            ` + apps[apps.length - 1].name + `
+                        </div>
+                </div>`);
+            } else {
+                $("#app-display-area .container").append(`<div class="row">
+                        <div class="col-sm app-card noselect" onclick='runApp(\`` + apps[x].script + `\`)'>
+                            ` + apps[x].name + `
+                        </div>
+                        <div class="col-sm app-card noselect" onclick='runApp(\`` + apps[x + 1].script + `\`)' style='margin-left: 3%;'>
+                            ` + apps[x + 1].name + `
+                        </div>
+                    </div>`);
+            }
+        }
+    }
+
+    function loadSavedCards() {
+        $("#saved-cards-display-area .container").empty();
+        for(x = 0; x < savedCards.length; x+=2) {
+            if(savedCards.length % 2 === 1 && x === savedCards.length - 1) {
+                $("#saved-cards-display-area .container").append(`<div class="row">
+                        <div class="col-sm app-card noselect" onclick='runApp(\`` + savedCards[savedCards.length - 1].script + `\`)'>
+                            ` + savedCards[savedCards.length - 1].name + `
+                        </div>
+                </div>`);
+            } else {
+                $("#saved-cards-display-area .container").append(`<div class="row">
+                        <div class="col-sm app-card noselect" onclick='runApp(\`` + savedCards[x].script + `\`)'>
+                            ` + savedCards[x].name + `
+                        </div>
+                        <div class="col-sm app-card noselect" onclick='runApp(\`` + savedCards[x + 1].script + `\`)' style='margin-left: 3%;'>
+                            ` + savedCards[x + 1].name + `
+                        </div>
+                    </div>`);
+            }
+        }
+    }
+
+    function loadSettings() {
+        $("#settings-page-panel").empty();
+        $("#settings-page-panel").append(`<table class='table' style='font-size: 24px;'>
+                                        <thead>
+                                            <tr>
+                                            <th class='col-xs-6' style='text-align: center;'>Setting</th>
+                                            <th class="col-xs-6" style='text-align: center;'>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody></table>`);
+        for(x = 0; x < settings.length; x++) {
+            if(settings[x].showInSettingsMenu) {
+                var valueChangeHTML = settings[x].value;
+                if(typeof(settings[x].value) == "boolean") {
+                    if(settings[x].value) {
+                        valueChangeHTML = `<input id='setting-option-` + x + `' type="checkbox" checked>`;
+                    } else {
+                        valueChangeHTML = `<input id='setting-option-` + x + `' type="checkbox">`;
+                    }
+                } else if(typeof(settings[x].value) == "number") {
+                    valueChangeHTML = `<input style='color: black' type="number" id='setting-option-` + x + `' min="1" max="15" value='` + settings[x].value + `'>`;
+                }
+                $("#settings-page-panel").append(`
+                            <div class='setting-list-title'>` + settings[x].title + `</div>
+                            <div class='setting-list-value'>` + valueChangeHTML + `</div>
+                `);
+            }
+        }
+
+        $("#settings-page-panel").append(`
+            <button onclick='saveSettings()' style='position: absolute; bottom: 16px; right: 16px;' type="button" class="btn btn-primary">Save</button>
+        `);
+    }
+
+    function saveSettings() {
+        for(x = 0; x < settings.length; x++) {
+            if(settings[x].showInSettingsMenu) {
+                console.log($("#setting-option-" + x).val());
+                if($("#setting-option-" + x).is("input[type=checkbox]")) {
+                    settings[x].value = $("#setting-option-" + x).prop("checked");
+                } else if($("#setting-option-" + x).is("input[type=number]")) {
+                    settings[x].value = parseInt($("#setting-option-" + x).val());
+                }
+            }
+        }
+        closeSettingsPage();
+        applySettings();
+    }
+
+    function applySettings() {
+
+        if(getSetting("dark-mode")) {
+            $("#dark-overlay").show();
+            $("#instruction").css("opacity", "0.15");
+            $("#menu-icon").css("color", "white");
+            setSetting("menu-icon-color", "white");
+            setSetting("pen-color", "white");
+            if(draw.record.length > 0) {
+                performDrawRecord();
+            }
+            setCookie("dark-mode", "true", 30);
+        } else {
+            $("#dark-overlay").hide();
+            $("#instruction").css("opacity", "1");
+            $("#menu-icon").css("color", "#232323");
+            setSetting("menu-icon-color", "#232323");
+            setSetting("pen-color", "black");
+            if(draw.record.length > 0) {
+                performDrawRecord();
+            }
+            setCookie("dark-mode", "false", 30);
+        }
+
+        if(getSetting("show-close-confirm")) {
+            setCookie("show-close-confirm", "true", 30);
+        } else {
+            setCookie("show-close-confirm", "false", 30);
+        }
+
+        if(getSetting("show-save-confirm")) {
+            setCookie("show-save-confirm", "true", 30);
+        } else {
+            setCookie("show-save-confirm", "false", 30);
+        }
+
+        if(getSetting("instructions")) {
+           $("#instruction").show(); 
+           setCookie("instructions", "true", 30);
+        } else {
+            $("#instruction").hide();
+            setCookie("instructions", "false", 30);
+        }
+
+        if(getSetting("allow-drawing")) {
+            $("#drawing-button-container").show();
+            $("#drawing-clear-button").show();
+            $("#drawing-width-button").show();
+            $("#drawing-auto-line-button").show();
+            $("#drawing-to-line-button").show();
+            $("#drawing-lines-button").show();
+            $("#drawing-undo-button").show();
+            $("#drawing-toggle-button").show();
+           setCookie("allow-drawing", "true", 30);
+        } else {
+            $("#drawing-button-container").hide();
+            $("#drawing-clear-button").hide();
+            $("#drawing-width-button").hide();
+            $("#drawing-auto-line-button").hide();
+            $("#drawing-to-line-button").hide();
+            $("#drawing-lines-button").hide();
+            $("#drawing-undo-button").hide();
+            $("#drawing-toggle-button").hide();
+            setCookie("allow-drawing", "false", 30);
+        }
+    }
+
+    applySettings();
+
+    function commandEquals(cmdOne, cmdTwo) {
+        if(cmdOne.toLowerCase().trim() == cmdTwo.toLowerCase().trim()) {
+            return true;
+        }
+        return false;
+    }
+
+    function openAppPage() {
+        $("#app-page").css("top", "0");
+        loadApps();
+    }
+
+    function closeAppPage() {
+        $("#app-page").css("top", "100%");
+    }
+
+    function openSavedCardsPage() {
+        $("#saved-cards-page").css("top", "0");
+        loadSavedCards();
+    }
+
+    function closeSavedCardsPage() {
+        $("#saved-cards-page").css("top", "100%");
+    }
+
+    function openSettingsPage() {
+        $("#settings-page").css("left", "0");
+        loadSettings();
+    }
+
+    function closeSettingsPage() {
+        $("#settings-page").css("left", "100%");
+    }
+
+    
+
+    $("#new-script-text").on("keydown", function(e) {
+        var keyCode = e.keyCode || e.which; 
+        
+        var keys = $("#new-script-text").val().split("");
+        alert(keys);
+
+        if (keyCode == 9) { 
+            e.preventDefault(); 
+            
+        }  
+    });
+
+    function runScriptPrompt(title) {
+        return packages.run(prompt(title, ""));
+    }
+
+
+    var promptInput = "";
+
+    function runScript(txt) {
+        var commands = txt.split("\n");
+        var promptCount = 0;
+        console.log(commands);
+        $("#prompt-panel").empty();
+        for(x = 0; x < commands.length; x++) {
+            commands[x] = commands[x].trimStart();
+            
+            
+            if(commandEquals(commands[x].substring(0, 7), "prompt ")) {
+                $("#prompt-panel").append("<h1><strong>" + commands[x].substring(7, commands[x].length) + "</strong></h1>");
+                $("#prompt-panel").append("<input class='form-control' />");
+                promptCount += 1;
+            }
+        }
+
+        if(promptCount > 0) {
+            prompt.open = true;
+            $("#prompt-panel").append("<button class='btn btn-primary'>Enter</button>");
+            $("#prompt-page").css("top", "0");
+            $("#prompt-panel button").click(function() {
+                promptInput = packages.run($("#prompt-panel input").val());
+                $("#prompt-page").css("top", "-100%");
+                prompt.open = false;
+            });
+            
+        }
+
+        var waitForPromptClose = setInterval(function() {
+            if(!prompt.open) {
+                runPostCommands(runCommands(txt));
+                clearInterval(waitForPromptClose);
+            }
+        }, 100);
+    }
+
+    var canvas = document.getElementById("drawing-area");
+    var pen = canvas.getContext("2d");
+
+    var mouse = {
+            x: 0,
+            y: 0,
+
+            last: {
+                x: 0,
+                y: 0,
+
+                direction: {
+                    up: false,
+                    down: false,
+                    left: false,
+                    right: false
+                }
+            },
+
+            auto: {
+                line: {
+                    last: {
+                        x: 0,
+                        y: 0
+                    },
+
+                    x: 0,
+                    y: 0
+                }
+            },
+
+            direction: {
+                up: false,
+                down: false,
+                left: false,
+                right: false
+            },
+
+            move: {
+                count: 0
+            },
+
+            down: false
+    }
+
+    pen.canvas.width  = window.innerWidth;
+    pen.canvas.height = window.innerHeight;
+
+    $().resize()
+
+    function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: evt.clientX - rect.left,
+            y: evt.clientY - rect.top
+        };
+    }
+
+    function addToDrawRecord(_x, _y, _lastX, _lastY, _width) {
+        draw.record.push({
+            x: _x, 
+            y: _y, 
+            last: {
+                x: _lastX,
+                y: _lastY
+            },
+            width: _width
+        });
+    }
+
+    function performDrawRecord() {
+        clearScreen();
+        pen.strokeStyle = getSetting("pen-color");
+        for(x = 0; x < draw.record.length; x++) {
+            pen.lineWidth = draw.record[x].width;
+            pen.beginPath();
+            pen.moveTo(draw.record[x].last.x, draw.record[x].last.y);
+            pen.lineTo(draw.record[x].x, draw.record[x].y);
+            pen.stroke();
+        }
+    }
+
+    function isOverElement(x, y, element) {
+        if(x >= parseInt(element.css("left")) && x <= (parseInt(element.css("left")) + parseInt(element.css("width"))) &&
+            y >= parseInt(element.css("top")) && y <= (parseInt(element.css("top")) + parseInt(element.css("height")))) {
+                return true;
+        }
+        return false;
+    }
+
+    $("#drawing-area").mousedown(function(e) {
+        if(e.which == 1) {
+
+            mouse.down = true;
+            if(getSetting("to-line")) {
+                
+            } 
+            
+            if(getSetting("auto-line") || getSetting("to-line")) {
+                setAutoLineStart(e);
+            }
+        }
+    });
+
+    $("#drawing-area").mouseup(function(e) {
+        if(e.which == 1) {
+            mouse.down = false;
+
+            draw.lineRecord.push(draw.record.length - 1);  
+            if(getSetting("auto-line")) {
+                clearScreen();
+                setAutoLineEnd(e);
+                pen.lineWidth = getSetting("pen-size");
+                writeAutoLine();
+            }
+
+            if(getSetting("to-line")) {
+                clearScreen()
+                setAutoLineEnd(e);
+                pen.lineWidth = getSetting("pen-size");
+                writeAutoLine();
+            }
+            performDrawRecord();
+        }
+    })
+
+    function setAutoLineStart(e) {
+        mouse.auto.line.last.x = getMousePos(canvas, e).x;
+        mouse.auto.line.last.y = getMousePos(canvas, e).y;
+    }
+
+    function setAutoLineEnd(e) {
+        mouse.auto.line.x = getMousePos(canvas, e).x;
+        mouse.auto.line.y = getMousePos(canvas, e).y;
+    }
+
+    function writeAutoLine() {
+        addToDrawRecord(mouse.auto.line.x, mouse.auto.line.y, mouse.auto.line.last.x, mouse.auto.line.last.y, pen.lineWidth);
+    }
+
+    function getMouseDirection() {
+        mouse.direction.up = false;
+        mouse.direction.down = false;
+        mouse.direction.left = false;
+        mouse.direction.right = false;
+
+        if(mouse.last.x - mouse.x > getSetting("auto-line-intensity")) {
+            mouse.direction.left = true;
+        } if(mouse.x - mouse.last.x > getSetting("auto-line-intensity")) {
+            mouse.direction.right = true;
+        } if(mouse.last.y - mouse.y > getSetting("auto-line-intensity")) {
+            mouse.direction.up = true;
+        } if(mouse.y - mouse.last.y > getSetting("auto-line-intensity")) {
+            mouse.direction.down = true;
+        }
+    }
+
+    $("#drawing-area").mousemove(function(e) {
+        mouse.move.count++;
+        var pos = getMousePos(canvas, e);
+        mouse.last.x = mouse.x;
+        mouse.last.y = mouse.y;
+        mouse.x = pos.x;
+        mouse.y = pos.y;
+
+        if(mouse.move.count % 10 === 0) {
+            $("#menu-icon").css("left", "0");
+            if(isOverElement(getMousePos(canvas, e).x, getMousePos(canvas, e).y, $("#menu-icon"))) {
+                $("#menu-icon").css("left", "-30px");
+            }
+        }
+
+        if(mouse.down && getSetting("drawing")) {
+            getMouseDirection();
+            
+            pen.strokeStyle = getSetting("pen-color");
+            pen.lineWidth = getSetting("pen-size");
+            pen.beginPath();
+            pen.moveTo(mouse.last.x, mouse.last.y);
+            pen.lineTo(mouse.x, mouse.y);
+            pen.stroke();
+        }
+
+        if(!getSetting("auto-line") && mouse.down && !getSetting("to-line")) {
+            addToDrawRecord(mouse.x, mouse.y, mouse.last.x, mouse.last.y, pen.lineWidth);
+        }
+
+        if(getSetting("auto-line") && mouse.down && !getSetting("to-line")) {
+            var change = false;
+            if(mouse.move.count % 1 === 0) {
+                if(mouse.last.direction.left && (
+                    mouse.direction.up || mouse.direction.right || mouse.direction.down
+                )) {
+                    setAutoLineEnd(e);
+                    change = true;
+                }
+
+                if(mouse.last.direction.up && (
+                    mouse.direction.left || mouse.direction.right || mouse.direction.down
+                )) {
+                    setAutoLineEnd(e);
+                    change = true;
+                }
+
+                if(mouse.last.direction.down && (
+                    mouse.direction.up || mouse.direction.right || mouse.direction.left
+                )) {
+                    setAutoLineEnd(e);
+                    change = true;
+                }
+
+                if(mouse.last.direction.right && (
+                    mouse.direction.up || mouse.direction.left || mouse.direction.down
+                )) {
+                    setAutoLineEnd(e);
+                    change = true;
+                }
+
+                if(change) {
+                    writeAutoLine();
+                    setAutoLineStart(e);
+                }
+            }
+
+            if(mouse.move.count % 1 === 0) {
+                //console.log("up: " + mouse.direction.up + " || down: " + mouse.direction.down + " || left: " + mouse.direction.left + " || right: " + mouse.direction.right);
+                mouse.last.direction.up = false;
+                mouse.last.direction.down = false;
+                mouse.last.direction.left = false;
+                mouse.last.direction.right = false;
+
+                if(mouse.direction.left) {
+                    mouse.last.direction.left = true;
+                } else if(mouse.direction.right) {
+                    mouse.last.direction.right = true;
+                } else if(mouse.direction.down) {
+                    mouse.last.direction.down = true;
+                } else if(mouse.direction.up) {
+                    mouse.last.direction.up = true;
+                }
+            }
+            
+        }
+            
+        });
+
+    function runCommands(txt) {
+        var commands = txt.split("\n");
+        var postCommands = [];
+        for(x = 0; x < commands.length; x++) {
+
+            if(commandEquals(commands[x], "documentation") || commandEquals(commands[x], "help"), commandEquals(commands[x], "?")) {
+                createNewCard(script.help.guideHTML, "450px", "550px");
+            }
+
+            if(commandEquals(commands[x], "settings")) {
+                if(commandEquals(commands[x + 1], "{")) {
+                    var endOfBlock = false;
+                    var i = x + 2;
+                    while(!endOfBlock) {
+
+                        if(commandEquals(commands[i], "}")) {
+                            x = i;
+                            endOfBlock = true;
+                        } else {
+
+                            if(commandEquals(commands[i], "background: dark")) {
+                                $("#card-area").css("background-color", "#303030");
+                            }
+
+                            if(commandEquals(commands[i], "background: light")) {
+                                $("#card-area").css("background-color", "white");
+                            }
+
+                            if(commandEquals(commands[i], "close confirm: false") || commandEquals(commands[i], "close-confirm: false")) {
+                                setSetting("show-close-confirm", false);
+                            }
+
+                            if(commandEquals(commands[i], "close confirm: true") || commandEquals(commands[i], "close-confirm: true")) {
+                                setSetting("show-close-confirm", true);
+                            }
+
+                            /* Command only used for testing purposes.
+                            if(commandEquals(commands[i], "noselect: true")) {
+                                $("*").addClass("noselect");
+                            }
+                            */
+                        }
+
+                        i++;
+                    }
+                }
+            }
+
+            if(commandEquals(commands[x], "create card")) {
+                if(commandEquals(commands[x + 1], "{")) {
+                    var cardHTML = "<div class='card-html'>" + script.styles.defaultStyle;
+                    var endOfBlock = false;
+                    var i = x + 2;
+                    while(!endOfBlock) {
+
+                        if(commandEquals(commands[i], "}")) {
+                            cardHTML += "</div>";
+                            createNewCard(cardHTML);
+                            cardHTML = "";
+                            x = i;
+                            endOfBlock = true;
+                        } else {
+                            commands[i] = commands[i].trimStart();
+                            if(commandEquals(commands[i].substring(0, 7), "prompt ")) {
+                                cardHTML += promptInput;
+                            } else if(commandEquals(commands[i].substring(0, 13), "post command ")) {
+                                postCommands.push(commands[i].substring(13, commands[i].length));
+                            } else if(commandEquals(commands[i].substring(0, 14), "add parameter ")) {
+                                var parameterText = commands[i].substring(14, commands[i].length).split(": ");
+                                script.submitParameters(parameterText[0], parameterText[1]);
+                            } else if(commandEquals(commands[i].substring(0, 11), "parameter: ")) {
+                                for(y = 0; y < script.parameters.length; y++) {
+                                    console.log(script.parameters[y].value)
+                                    if(script.parameters[y].name == commands[i].substring(11, commands[i].length).trim()) {
+                                        console.log(script.parameters[y].value);
+                                        cardHTML += script.parameters[y].value;
+                                    }
+                                }
+                            } else {
+                                cardHTML += commands[i];
+                            }
+                        }
+
+                        i++;
+                    }
+
+                    
+                }
+            }
+
+            if(commandEquals(commands[x], "create card without default style") || commandEquals(commands[x], "create card no default style")) {
+                if(commandEquals(commands[x + 1], "{")) {
+                    var cardHTML = "<div class='card-html-no-default'>";
+                    var endOfBlock = false;
+                    var i = x + 2;
+                    while(!endOfBlock) {
+
+                        if(commandEquals(commands[i], "}")) {
+                            cardHTML += "</div>";
+                            createNewCard(cardHTML);
+                            cardHTML = "";
+                            x = i;
+                            endOfBlock = true;
+                        } else {
+                            cardHTML += commands[i] + "<br />";
+                        }
+
+                        i++;
+                    }
+
+                }
+            }
+
+            if(commandEquals(commands[x].substring(0, 12), "delete card ")) {
+                deleteCard(commands[x].substring(12, commands[x].length));
+            }
+        }
+
+        return postCommands;
+    }
+
+    function runPostCommands(arr) {
+        for(x = 0; x < arr.length; x++) {
+            packages.post.commands.run(arr[x]);
+        }
+    }
+
+
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+            vars[key] = value;
+        });
+        return vars;
+    }
+
+    $("document").ready(function() {
+        for(x = 0; x < getUrlVars().length; x++) {
+            command = `
+        Create Card
+            {
+                `+ getUrlVars()["c" + x + ".html"] +`
+            }
+        `;
+
+        command.replace("hi", "bye");
+            runCommands(command);
+            $("#" + (x + 1)).css({"left": getUrlVars()["c" + x + ".x"] + "px", 
+                            "top": getUrlVars()["c" + x + ".y"] + "px"
+            });
+        }
+    });
+
+    function cookieSettings() {
+        if(getCookie("dark-mode") == "true") {
+            setSetting("dark-mode", true);
+        } else if(getCookie("dark-mode") == "false") {
+            setSetting("dark-mode", false);
+        }
+
+        if(getCookie("show-close-confirm") == "true") {
+            setSetting("show-close-confirm", true);
+        } else if(getCookie("show-close-confirm") == "false") {
+            setSetting("show-close-confirm", false);
+        }
+
+        if(getCookie("show-save-confirm") == "true") {
+            setSetting("show-save-confirm", true);
+        } else if(getCookie("show-save-confirm") == "false") {
+            setSetting("show-save-confirm", false);
+        }
+
+        if(getCookie("instructions") == "true") {
+            setSetting("instructions", true);
+        } else if(getCookie("instructions") == "false") {
+            setSetting("instructions", false);
+        }
+
+        if(getCookie("allow-drawing") == "true") {
+            setSetting("allow-drawing", true);
+        } else if(getCookie("allow-drawing") == "false") {
+            setSetting("allow-drawing", false);
+        }
+    }
+
+
+    function setCookie(name, value, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires="+ d.toUTCString();
+        document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function saveLink() {
+        
+    }
+        
+    </script>
+</body>
+</html>

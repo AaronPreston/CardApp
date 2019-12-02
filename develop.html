@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title>Card Studio</title>
+
+    <style>
+        body {
+            overflow: hidden;
+            font-family: Sans-Serif;
+            background-color: #333333;
+        }
+
+        .card {
+            background-color: white;
+            /*box-shadow: 0px 1px 5px black;*/
+            border: 1px solid #d9d9d9;
+            color: black;
+            font-size: 20px;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 30px 20px;
+            touch-action: none;
+            text-align: left;
+            position: absolute;
+            left: 5%;
+            top: 16px;
+
+            /* This makes things *much* easier */
+            box-sizing: border-box;
+            transition: background-color 0.2s ease;
+        }
+
+        .inner-card-content {
+            height: 95%;
+            overflow-y: auto;
+        }
+
+        .inner-card-content::-webkit-scrollbar-track,
+        textarea::-webkit-scrollbar-track,
+        #menu-panel::-webkit-scrollbar-track {
+
+            border-radius: 10px;
+            background-color: #F5F5F5;
+        }
+
+        .inner-card-content::-webkit-scrollbar,
+        textarea::-webkit-scrollbar,
+        #menu-panel::-webkit-scrollbar {
+            border-radius: 10px;
+            width: 8px;
+            height: 8px;
+            background-color: #F5F5F5;
+        }
+
+        .inner-card-content::-webkit-scrollbar-thumb,
+        textarea::-webkit-scrollbar-thumb,
+        #menu-panel::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background-color: #e2e2e2;
+        }
+
+        .resize-drag,
+        .drag {
+            background-color: #f7f7f7;
+        }
+
+        #code-area {
+            position: fixed;
+            top: 8px;
+            left: 8px;
+            bottom: 8px;
+            width: 50%;
+            resize: none;
+            background-color: #404040;
+            color: white;
+            border: none;
+        }
+
+        #code-card {
+            position: fixed;
+            top: 20%;
+            left: 60%;
+            bottom: 20%;
+            right: 10%;
+        }
+
+        #run-button {
+            position: fixed;
+            right: 8px;
+            top: 8px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+
+    <textarea id="code-area" class="form-control" name=""></textarea>
+    <div class='card' id='code-card'>
+        <div class='inner-card-content' style='overflow-y: auto;' id='inner-card'></div>
+    </div>
+    <button class='btn btn-primary' id='run-button'>Run</button>
+    <div class="container">
+    </div>
+
+    <script>
+
+        $(document).bind('keydown', function (e) {
+            if (e.ctrlKey && (e.which == 83)) {
+                e.preventDefault();
+                updateCard();
+                return false;
+            }
+        });
+
+        $("#run-button").click(function () {
+            updateCard();
+        });
+
+        function updateCard() {
+            $("#inner-card").html($("#code-area").val());
+        }
+    </script>
+</body>
+
+</html>
